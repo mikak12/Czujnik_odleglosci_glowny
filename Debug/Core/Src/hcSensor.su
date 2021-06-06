@@ -1,0 +1,9 @@
+hcSensor.c:19:6:uDelayTim1	16	static
+hcSensor.c:31:6:uDelayTim7	16	static
+hcSensor.c:42:10:get_pulses_cnt	4	static
+hcSensor.c:46:6:clear_pulses_cnt	4	static
+hcSensor.c:50:10:measureDistance	24	static
+hcSensor.c:65:10:triggerMeasureCenter	16	static
+hcSensor.c:80:10:triggerMeasureLeft	16	static
+hcSensor.c:91:10:triggerMeasureRight	16	static
+hcSensor.c:102:6:HAL_GPIO_EXTI_Callback	16	static
