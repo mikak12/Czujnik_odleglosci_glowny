@@ -25,6 +25,7 @@ extern "C" {
 #include "cmsis_os.h"
 
 enum displayDirection {horizontal, vertical};
+extern TIM_HandleTypeDef htim3;
 
 union uintToChar {
 	uint32_t x;
@@ -153,6 +154,7 @@ void lcdDataMode(struct lcdConf * lcd, uint8_t data);
 void lcdSetPlace(struct lcdConf * lcd, enum displayDirection direction, uint8_t col, uint8_t row);
 
 void lcdWelcome(struct lcdConf  lcd);
+void lcdClear(struct lcdConf  lcd);
 
 void lcdMarkPrint(struct lcdConf * lcd, char mark);
 void lcdReadBuffer(struct lcdConf * lcd);
@@ -169,6 +171,7 @@ void display_lvl1_right(struct lcdConf * lcd);
 void display_lvl2_right(struct lcdConf * lcd);
 
 void display_driver(uint64_t leftSensor, uint64_t centerSensor, uint64_t rightSensor, struct lcdConf lcd);
+void buzzerDriver(uint64_t minValue);
 
 #ifdef __cplusplus
 }

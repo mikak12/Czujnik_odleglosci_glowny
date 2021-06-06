@@ -50,6 +50,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -116,6 +118,7 @@ void Error_Handler(void);
 
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim7;
+extern TIM_HandleTypeDef htim3;
 
 /* USER CODE END Private defines */
 

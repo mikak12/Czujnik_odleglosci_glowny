@@ -109,6 +109,36 @@ void lcdWelcome(struct lcdConf  lcd)
 	lcdReadBuffer(&lcd);
 }
 
+void lcdClear(struct lcdConf  lcd)
+{
+	lcdClearBuffer(&lcd);
+	lcdSetPlace(&lcd, horizontal, 0, 0);
+
+	char layer[] = "          ";
+
+	memcpy(&(lcd.buffer[0][0]), layer, strlen(layer));
+	lcdReadBuffer(&lcd);
+
+	char layer1[] = "          ";
+
+	memcpy(&(lcd.buffer[1][0]), layer1, strlen(layer1));
+	lcdReadBuffer(&lcd);
+
+	char layer2[] = "          ";
+
+	memcpy(&(lcd.buffer[2][0]), layer2, strlen(layer2));
+	lcdReadBuffer(&lcd);
+
+	char layer3[] = "          ";
+
+	memcpy(&(lcd.buffer[3][0]), layer3, strlen(layer3));
+	lcdReadBuffer(&lcd);
+
+	char layer4[] = "         ";
+
+	memcpy(&(lcd.buffer[4][0]), layer4, strlen(layer4));
+	lcdReadBuffer(&lcd);
+}
 
 void lcdMarkPrint(struct lcdConf * lcd, char mark)
 {
@@ -116,14 +146,14 @@ void lcdMarkPrint(struct lcdConf * lcd, char mark)
     {
     	lcdDataMode(lcd, display_font[mark - 0x20][i]);
     }
-    if(dotOrNot != 0)
-    {
-    	lcdDataMode(lcd, 0x80);
-    }
-    else
-    {
+    //if(dotOrNot != 0)
+    //{
+    //	lcdDataMode(lcd, 0x80);
+    //}
+    //else
+    //{
     	lcdDataMode(lcd, 0x00);
-    }
+    //}
     dotOrNot = 0;
 }
 
@@ -378,6 +408,40 @@ void display_lvl2_right(struct lcdConf * lcd)
 	lcdReadBuffer(lcd);
 }
 
+void buzzerDriver(uint64_t minValue)
+{
+	if(minValue > 100 && minValue <140 )
+	{
+		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+		osDelay(10);
+		htim3.Instance->CCR1 = 2;
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
+		osDelay(100);
+	}
+	else if(minValue > 40)
+	{
+		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+		osDelay(10);
+		htim3.Instance->CCR1 = 80;
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
+		osDelay(60);
+	}
+	else if(minValue > 0)
+	{
+		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+		osDelay(10);
+		htim3.Instance->CCR1 = 220;
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
+		osDelay(20);
+	}
+	else
+	{
+		htim3.Instance->CCR1 = 0;
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
+		osDelay(200);
+	}
+}
+
 
 
 
@@ -417,7 +481,6 @@ void display_driver(uint64_t leftSensor, uint64_t centerSensor, uint64_t rightSe
 				mainSensor = rightSensor;
 				check = 3;
 			}
-
 			if(check == 1)
 			{
 				if(mainSensor > 100 || mainSensor == 0)

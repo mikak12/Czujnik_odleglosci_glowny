@@ -62,6 +62,8 @@ uint64_t tmp_mesRight;
 
 uint8_t begin;
 uint8_t choseSensor;
+uint8_t buzzerValue;
+uint8_t buzzerCheck;
 
 /* USER CODE END PM */
 
@@ -73,12 +75,14 @@ UART_HandleTypeDef huart3;
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim7;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 osThreadId HC_SR04Handle;
 osThreadId LCD_buzzerHandle;
+osThreadId BuzzerHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -92,8 +96,10 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_TIM3_Init(void);
 void hc_sr04_measure(void const * argument);
 void display_pii(void const * argument);
+void buzzer_work(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -138,6 +144,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM7_Init();
   MX_SPI1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   lcd.spi = &hspi1;
@@ -178,6 +185,10 @@ int main(void)
   /* definition and creation of LCD_buzzer */
   osThreadDef(LCD_buzzer, display_pii, osPriorityIdle, 0, 128);
   LCD_buzzerHandle = osThreadCreate(osThread(LCD_buzzer), NULL);
+
+  /* definition and creation of Buzzer */
+  osThreadDef(Buzzer, buzzer_work, osPriorityIdle, 0, 128);
+  BuzzerHandle = osThreadCreate(osThread(Buzzer), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -430,6 +441,65 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 1845;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 254;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
   * @brief TIM7 Initialization Function
   * @param None
   * @retval None
@@ -632,7 +702,7 @@ void hc_sr04_measure(void const * argument)
 		break;
 	}
 
-    osDelay(50);
+    osDelay(20);
   }
   /* USER CODE END 5 */
 }
@@ -647,6 +717,7 @@ void hc_sr04_measure(void const * argument)
 void display_pii(void const * argument)
 {
   /* USER CODE BEGIN display_pii */
+
   /* Infinite loop */
   for(;;)
   {
@@ -656,6 +727,8 @@ void display_pii(void const * argument)
 		lcdWelcome(lcd);
 		begin = 1;
 		osDelay(4000);
+		lcdClear(lcd);
+		lcdClearBuffer(&lcd);
 	}
 
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
@@ -664,9 +737,37 @@ void display_pii(void const * argument)
     mesLeft = 0;
     mesCenter = 0;
     mesRight = 0;
-    osDelay(300);
+    osDelay(200);
   }
   /* USER CODE END display_pii */
+}
+
+/* USER CODE BEGIN Header_buzzer_work */
+/**
+* @brief Function implementing the Buzzer thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_buzzer_work */
+void buzzer_work(void const * argument)
+{
+  /* USER CODE BEGIN buzzer_work */
+  /* Infinite loop */
+  for(;;)
+  {
+	  buzzerValue = mesCenter;
+	  if(mesLeft < buzzerValue)
+	  {
+		  buzzerValue = mesLeft;
+	  }
+	  if(mesRight < buzzerValue)
+	  {
+		  buzzerValue = mesRight;
+	  }
+	  buzzerDriver(buzzerValue);
+
+  }
+  /* USER CODE END buzzer_work */
 }
 
 /**
