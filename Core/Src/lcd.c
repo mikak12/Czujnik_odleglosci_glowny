@@ -20,7 +20,7 @@ uint8_t j;
 uint8_t dotOrNot;
 
 
-void lcdInit(struct lcdConf * lcd)
+void lcdInit(struct lcdConf *lcd)
 {
 	uint64_t i;
 	HAL_GPIO_WritePin(lcd->rst_port, lcd->rst_pin, GPIO_PIN_RESET);
@@ -41,7 +41,7 @@ void lcdInit(struct lcdConf * lcd)
 	}
 }
 
-void lcdCmdMode(struct lcdConf * lcd, uint8_t cmd)
+void lcdCmdMode(struct lcdConf *lcd, uint8_t cmd)
 {
 	HAL_GPIO_WritePin(lcd->dc_port, lcd->dc_pin, GPIO_PIN_RESET);
 
@@ -69,7 +69,7 @@ void lcdDataMode(struct lcdConf * lcd, uint8_t data)
 
 }
 
-void lcdSetPlace(struct lcdConf * lcd, enum displayDirection direction, uint8_t col, uint8_t row)
+void lcdSetPlace(struct lcdConf *lcd, enum displayDirection direction, uint8_t col, uint8_t row)
 {
 	if(direction == vertical)
 	{
@@ -93,12 +93,12 @@ void lcdWelcome(struct lcdConf  lcd)
 	memcpy(&(lcd.buffer[1][3]), layer1, strlen(layer1));
 	lcdReadBuffer(&lcd);
 
-	char layer2[] = "W";
+	char layer2[] = "({)";
 
 	memcpy(&(lcd.buffer[2][6]), layer2, strlen(layer2));
 	lcdReadBuffer(&lcd);
 
-	char layer3[] = "IZER A";
+	char layer3[] = "({)";
 
 	memcpy(&(lcd.buffer[3][3]), layer3, strlen(layer3));
 	lcdReadBuffer(&lcd);
@@ -168,7 +168,7 @@ void lcdReadBuffer(struct lcdConf * lcd)
 
 void lcdClearBuffer(struct lcdConf * lcd)
 {
-    for(uint8_t i=0; i<6; i++)
+    for(uint8_t i=0; i<5; i++)
         for(uint8_t j=0; j<14; j++)
         	lcd->buffer[i][j] = ' ';
 }
@@ -410,7 +410,7 @@ void display_lvl2_right(struct lcdConf * lcd)
 
 void buzzerDriver(uint64_t minValue)
 {
-	if(minValue > 100 && minValue <140 )
+	if(minValue > 22 && minValue <31 )
 	{
 		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 		osDelay(10);
@@ -418,7 +418,7 @@ void buzzerDriver(uint64_t minValue)
 		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
 		osDelay(100);
 	}
-	else if(minValue > 40)
+	else if(minValue > 15 && minValue < 23)
 	{
 		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 		osDelay(10);
@@ -426,7 +426,7 @@ void buzzerDriver(uint64_t minValue)
 		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
 		osDelay(60);
 	}
-	else if(minValue > 0)
+	else if(minValue > 0 && minValue < 16)
 	{
 		HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 		osDelay(10);
@@ -455,9 +455,9 @@ void display_driver(uint64_t leftSensor, uint64_t centerSensor, uint64_t rightSe
 	//centerSensor = 100;
 	//leftSensor = 100;
 
-	if(leftSensor < 50 && centerSensor < 50 && rightSensor < 50)
+	if(leftSensor < 30 && centerSensor < 30 && rightSensor < 30)
 	{
-		if(leftSensor < 20 && centerSensor < 20 && rightSensor < 20)
+		if(leftSensor < 10 && centerSensor < 10 && rightSensor < 10)
 		{
 			display_lvl2_based(&lcd);
 		}
@@ -483,45 +483,45 @@ void display_driver(uint64_t leftSensor, uint64_t centerSensor, uint64_t rightSe
 			}
 			if(check == 1)
 			{
-				if(mainSensor > 100 || mainSensor == 0)
+				if(mainSensor > 30 || mainSensor == 0)
 				{
 					display_based(&lcd);
 				}
-				else if(mainSensor < 101 && mainSensor > 40)
+				else if(mainSensor < 31 && mainSensor > 15)
 				{
 					display_lvl1_srodek(&lcd, centerSensor);
 				}
-				else if(mainSensor  < 41)
+				else if(mainSensor  < 16)
 				{
 					display_lvl2_srodek(&lcd);
 				}
 			}
 			if(check == 2)
 			{
-				if(mainSensor > 100 || mainSensor == 0)
+				if(mainSensor > 30 || mainSensor == 0)
 				{
 					display_based(&lcd);
 				}
-				else if(mainSensor < 101 && mainSensor > 40)
+				else if(mainSensor < 31 && mainSensor > 15)
 				{
 					display_lvl1_left(&lcd);
 				}
-				else if(mainSensor  < 41)
+				else if(mainSensor  < 16)
 				{
 					display_lvl2_left(&lcd);
 				}
 			}
 			if(check == 3)
 			{
-				if(mainSensor > 100 || mainSensor == 0)
+				if(mainSensor > 30 || mainSensor == 0)
 				{
 					display_based(&lcd);
 				}
-				else if(mainSensor < 101 && mainSensor > 40)
+				else if(mainSensor < 31 && mainSensor > 15)
 				{
 					display_lvl1_right(&lcd);
 				}
-				else if(mainSensor  < 41)
+				else if(mainSensor  < 16)
 				{
 					display_lvl2_right(&lcd);
 				}

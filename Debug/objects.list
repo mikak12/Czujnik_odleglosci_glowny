@@ -1,3 +1,4 @@
+"Core/Src/DHT11.o"
 "Core/Src/freertos.o"
 "Core/Src/hcSensor.o"
 "Core/Src/lcd.o"

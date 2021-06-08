@@ -82,6 +82,8 @@ void Error_Handler(void);
 #define ECHO2_GPIO_Port GPIOF
 #define ECHO3_Pin GPIO_PIN_9
 #define ECHO3_GPIO_Port GPIOF
+#define DHT11_Pin GPIO_PIN_3
+#define DHT11_GPIO_Port GPIOA
 #define LD3_Pin GPIO_PIN_14
 #define LD3_GPIO_Port GPIOB
 #define STLK_RX_Pin GPIO_PIN_8
@@ -119,6 +121,7 @@ void Error_Handler(void);
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim16;
 
 /* USER CODE END Private defines */
 
