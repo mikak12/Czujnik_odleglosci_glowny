@@ -28,6 +28,9 @@ extern "C" {
 #define DHT11_PORT 	GPIOA
 #define DHT11_PIN 	GPIO_PIN_3
 
+#define DHT11_2_PORT 	GPIOG
+#define DHT11_2_PIN 	GPIO_PIN_1
+
 extern TIM_HandleTypeDef htim16;
 
 void delayuSecTim16(uint32_t uSec);
@@ -37,7 +40,7 @@ void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void startDHT11(void);
 uint8_t checkResponse (void);
 uint8_t readDHT11(void);
-float soundSpeedCalibration(uint8_t tempByte1);
+uint16_t soundSpeedCalibration(uint8_t tempByte1);
 
 
 #ifdef __cplusplus

@@ -15,6 +15,7 @@
 
 volatile static uint32_t pulses_cnt = 0;
 const float soundSpeed = 0.0343;
+extern float soundSpeed2;
 
 void uDelayTim1(uint64_t uTenSec)
 {
@@ -58,7 +59,8 @@ uint64_t measureDistance(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 		uDelayTim7(2);
 	}
 
-	distance = cntTics * soundSpeed * 1.5;
+	//distance = cntTics * soundSpeed * 1.5;
+	distance = cntTics * soundSpeed2 * 1.5;
 	return distance;
 }
 
